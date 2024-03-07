@@ -244,5 +244,36 @@ public class GradebookControllerTest {
 
     }
 
+    @Test
+    public void deleteAValidGradeHttpRequest() throws Exception{
+        mockMvc.perform(MockMvcRequestBuilders.delete("/grades/{id}/{gradeType}", 1, "math"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$.id",is(1)))
+                .andExpect(jsonPath("$.firstname",is("Eric")))
+                .andExpect(jsonPath("$.lastname", is("Roby")))
+                .andExpect(jsonPath("$.emailAddress", is("eric.roby@luv2code_school.com")))
+                .andExpect(jsonPath("$.studentGrades.mathGradeResults", hasSize(0)));
+    }
+
+    @Test
+    public void deleteAInValidIdGradeHttpRequest() throws Exception{
+        mockMvc.perform(MockMvcRequestBuilders.delete("/grades/{id}/{gradeType}", 0, "math"))
+                .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.status", is(404)))
+                .andExpect(jsonPath("$.message", is("Student or Grade was not found")));
+
+    }
+
+    @Test
+    public void deleteAInValidGradeTypeHttpRequest() throws Exception{
+        mockMvc.perform(MockMvcRequestBuilders.delete("/grades/{id}/{gradeType}", 1, "music"))
+                .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.status", is(404)))
+                .andExpect(jsonPath("$.message", is("Student or Grade was not found")));
+
+    }
 
 }
